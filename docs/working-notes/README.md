@@ -7,6 +7,7 @@ The final RESEARCH.md, ARCHITECTURE.md and DESIGN.md go in the repo root and are
 |---|---|
 | `hrms-research-notes.md` | Facts and sources for the 8 research questions |
 | `architecture-guide.md` | Decisions to make for ARCHITECTURE.md, with recommendations |
+| `account-setup-checklist.md` | Step-by-step setup of Supabase, Clerk, Gmail SMTP, AI keys and Vercel, plus the env variable list |
 | `leave-policy-decisions.md` | The 11 policy rules the brief leaves open, decided, with worked examples to use as tests |
 | `design-canvas/` | Source files of the design canvas: dashboard, phone, design system, 4 user flows, 12 screen wireframes |
 | `design-tools/` | Scripts that generate the flow and wireframe boards |
