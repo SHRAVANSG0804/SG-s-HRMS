@@ -1,6 +1,8 @@
 // Pure business rules. Screens, the chatbot and CSV exports all reuse these.
 import { daysBetweenInclusive, daysInMonth, isSunday, monthOf } from './date'
-import type { AttendanceRecord, AttendanceStatus, Employee, Holiday, LeaveRequest, LeaveType, Session } from './types'
+import type {
+  AttendanceRecord, AttendanceStatus, Candidate, CandidateStage, Employee, Goal, Holiday, Interview, Job, LeaveRequest, LeaveType, Review, ReviewCycle, Session,
+} from './types'
 
 export const LEAVE_QUOTA: Record<LeaveType, number> = { CL: 8, SL: 7, EL: 15 }
 export const LEAVE_NAMES: Record<LeaveType, string> = { CL: 'Casual Leave', SL: 'Sick Leave', EL: 'Earned Leave' }
@@ -185,6 +187,138 @@ export function payslip(emp: Employee, month: string, attendance: AttendanceReco
     deductions: { pf, professionalTax, lop, total },
     net: gross - total,
   }
+}
+
+// ---------- ATS (recruitment) ----------
+
+export const STAGES: CandidateStage[] = ['applied', 'screening', 'interview', 'offer', 'hired', 'rejected']
+/** The forward path a candidate moves along; 'rejected' can be reached from any open stage. */
+export const PIPELINE: CandidateStage[] = ['applied', 'screening', 'interview', 'offer', 'hired']
+
+export const STAGE_META: Record<CandidateStage, { label: string; tone: Tone }> = {
+  applied: { label: 'Applied', tone: 'neutral' },
+  screening: { label: 'Screening', tone: 'info' },
+  interview: { label: 'Interview', tone: 'plum' },
+  offer: { label: 'Offer', tone: 'warn' },
+  hired: { label: 'Hired', tone: 'ok' },
+  rejected: { label: 'Rejected', tone: 'bad' },
+}
+
+export const JOB_STATUS_META: Record<Job['status'], { label: string; tone: Tone }> = {
+  requested: { label: 'Awaiting HR approval', tone: 'warn' },
+  open: { label: 'Open', tone: 'ok' },
+  on_hold: { label: 'On hold', tone: 'neutral' },
+  closed: { label: 'Closed', tone: 'bad' },
+}
+
+export function nextStage(stage: CandidateStage): CandidateStage | null {
+  const i = PIPELINE.indexOf(stage)
+  return i >= 0 && i < PIPELINE.length - 1 ? PIPELINE[i + 1] : null
+}
+
+/** HR sees every job; a manager sees the jobs they are hiring manager for; employees see none. */
+export function visibleJobs(session: Session, jobs: Job[]): Job[] {
+  if (session.role === 'hr') return jobs
+  if (session.role === 'manager') return jobs.filter((j) => j.hiringManagerId === session.employeeId)
+  return []
+}
+
+export function canManageJob(session: Session, job: Job): boolean {
+  return session.role === 'hr' || (session.role === 'manager' && job.hiringManagerId === session.employeeId)
+}
+
+/** Interviews this session may see: HR all; managers those they conduct or that belong to their jobs. */
+export function visibleInterviews(session: Session, interviews: Interview[], candidates: Candidate[], jobs: Job[]): Interview[] {
+  if (session.role === 'hr') return interviews
+  if (session.role !== 'manager') return []
+  const myJobs = new Set(visibleJobs(session, jobs).map((j) => j.id))
+  const myCands = new Set(candidates.filter((c) => myJobs.has(c.jobId)).map((c) => c.id))
+  return interviews.filter((i) => i.interviewerId === session.employeeId || myCands.has(i.candidateId))
+}
+
+export function pipelineCounts(jobId: string, candidates: Candidate[]): Record<CandidateStage, number> {
+  const out = Object.fromEntries(STAGES.map((s) => [s, 0])) as Record<CandidateStage, number>
+  for (const c of candidates) if (c.jobId === jobId) out[c.stage]++
+  return out
+}
+
+export function averageInterviewRating(candidateId: string, interviews: Interview[]): number | null {
+  const rs = interviews.filter((i) => i.candidateId === candidateId && i.status === 'completed' && i.rating).map((i) => i.rating!)
+  return rs.length ? Math.round((rs.reduce((a, b) => a + b, 0) / rs.length) * 10) / 10 : null
+}
+
+// ---------- PMS (performance) ----------
+
+export const PHASE_META: Record<ReviewCycle['phase'], { label: string; tone: Tone }> = {
+  goal_setting: { label: 'Goal setting', tone: 'info' },
+  review: { label: 'Review in progress', tone: 'warn' },
+  closed: { label: 'Closed', tone: 'neutral' },
+}
+
+export const RATING_LABEL: Record<number, string> = {
+  1: 'Needs improvement',
+  2: 'Partly meets expectations',
+  3: 'Meets expectations',
+  4: 'Exceeds expectations',
+  5: 'Outstanding',
+}
+
+/** Suggested appraisal increment (%) for a final rating. */
+export const INCREMENT_FOR_RATING: Record<number, number> = { 1: 0, 2: 3, 3: 6, 4: 10, 5: 15 }
+
+export function suggestedIncrement(rating: number): number {
+  return INCREMENT_FOR_RATING[Math.round(rating)] ?? 0
+}
+
+/** Who reviews an employee: their manager, or HR when they have none. The HR admin is not reviewed in the app. */
+export function reviewerOf(emp: Employee): string | null {
+  return emp.managerId ?? (emp.id === 'e01' ? null : 'e01')
+}
+
+export function cycleParticipants(cycle: ReviewCycle, employees: Employee[]): Employee[] {
+  return employees.filter((e) => e.active && e.joinDate <= cycle.to && reviewerOf(e) !== null)
+}
+
+/** May this session act as reviewer for the employee (approve goals, give manager rating)? */
+export function canReview(session: Session, emp: Employee): boolean {
+  if (session.employeeId === emp.id) return false
+  return session.role === 'hr' || reviewerOf(emp) === session.employeeId
+}
+
+export function goalWeightTotal(goals: Goal[]): number {
+  return goals.reduce((s, g) => s + g.weight, 0)
+}
+
+/** Weighted average of per-goal ratings, rounded to one decimal. Null if any goal is unrated. */
+export function weightedRating(goals: Goal[], key: 'selfRating' | 'managerRating'): number | null {
+  if (!goals.length || goals.some((g) => !g[key])) return null
+  const w = goalWeightTotal(goals)
+  if (!w) return null
+  return Math.round((goals.reduce((s, g) => s + g[key]! * g.weight, 0) / w) * 10) / 10
+}
+
+export type ReviewStage = 'goals_pending' | 'self_pending' | 'manager_pending' | 'hr_pending' | 'finalised'
+
+export const REVIEW_STAGE_META: Record<ReviewStage, { label: string; tone: Tone }> = {
+  goals_pending: { label: 'Goals not approved', tone: 'neutral' },
+  self_pending: { label: 'Self review pending', tone: 'info' },
+  manager_pending: { label: 'Manager review pending', tone: 'plum' },
+  hr_pending: { label: 'Awaiting HR', tone: 'warn' },
+  finalised: { label: 'Finalised', tone: 'ok' },
+}
+
+export function reviewStage(goals: Goal[], review: Review | undefined): ReviewStage {
+  if (review?.finalRating) return 'finalised'
+  if (review?.managerRating) return 'hr_pending'
+  if (review?.selfRating) return 'manager_pending'
+  if (!goals.length || goals.some((g) => !g.approved)) return 'goals_pending'
+  return 'self_pending'
+}
+
+/** Applies an increment to every salary component, rounded to the nearest rupee. */
+export function applyIncrement(salary: Employee['salary'], pct: number): Employee['salary'] {
+  const f = 1 + pct / 100
+  return { basic: Math.round(salary.basic * f), hra: Math.round(salary.hra * f), allowances: Math.round(salary.allowances * f) }
 }
 
 // ---------- Formatting & masking ----------

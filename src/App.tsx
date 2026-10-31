@@ -9,6 +9,8 @@ import { Employees } from './pages/Employees'
 import { Leave } from './pages/Leave'
 import { Login } from './pages/Login'
 import { Payroll } from './pages/Payroll'
+import { Performance } from './pages/Performance'
+import { Recruitment } from './pages/Recruitment'
 import { Reports } from './pages/Reports'
 
 const readHash = () => (window.location.hash.replace('#/', '') || 'dashboard') as Page
@@ -39,6 +41,8 @@ export default function App() {
       {current === 'employees' && <Employees />}
       {current === 'attendance' && <Attendance />}
       {current === 'leave' && <Leave />}
+      {current === 'recruitment' && <Recruitment />}
+      {current === 'performance' && <Performance />}
       {current === 'payroll' && <Payroll />}
       {current === 'reports' && <Reports />}
       <ChatBot setPage={setPage} />

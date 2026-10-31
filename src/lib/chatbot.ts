@@ -2,11 +2,12 @@
 // through the same rules the screens use, and are limited to what the role may see.
 import { addDays, fmtDate, fmtDay, fmtMonth, monthOf } from './date'
 import {
+  JOB_STATUS_META, PHASE_META, RATING_LABEL, REVIEW_STAGE_META, STAGE_META, cycleParticipants, pipelineCounts, reviewStage, visibleInterviews, visibleJobs,
   LEAVE_NAMES, LEAVE_QUOTA, STATUS_META, allBalances, attendanceSummary, directReports, inr, isWorkingDay, monthRange, payslip, scopeEmployees,
 } from './rules'
 import type { Employee, HRMSData, Session } from './types'
 
-export type Page = 'dashboard' | 'employees' | 'attendance' | 'leave' | 'payroll' | 'reports'
+export type Page = 'dashboard' | 'employees' | 'attendance' | 'leave' | 'recruitment' | 'performance' | 'payroll' | 'reports'
 
 export interface BotReply {
   text: string
@@ -23,17 +24,17 @@ export const BOT_PROFILES: Record<Session['role'], { title: string; intro: strin
   employee: {
     title: 'My HR Assistant',
     intro: 'Hi! I can help with your attendance, leave balance, payslip, holidays and HR policies.',
-    suggestions: ['My leave balance', 'My attendance this month', 'Show my payslip', 'Upcoming holidays', 'How do I apply for leave?', 'Leave policy'],
+    suggestions: ['My leave balance', 'My attendance this month', 'My goals and review', 'Show my payslip', 'Upcoming holidays', 'Leave policy'],
   },
   manager: {
     title: 'Manager Assistant',
     intro: 'Hello! Ask me about your team: who is absent today, pending approvals, attendance rates and more.',
-    suggestions: ["Who is absent today?", 'Pending leave approvals', 'Team attendance this month', 'Frequent absentees', 'Team leave next 7 days', 'Unmarked attendance today'],
+    suggestions: ["Who is absent today?", 'Pending leave approvals', 'My upcoming interviews', 'Team review status', 'Team attendance this month', 'My hiring pipeline', 'Frequent absentees'],
   },
   hr: {
     title: 'HR Copilot',
     intro: 'Welcome! I can summarise headcount, attendance, leave and payroll across the company.',
-    suggestions: ['Headcount by department', "Today's attendance overview", 'Pending leave requests', 'Payroll cost this month', 'Low attendance employees', 'New joiners'],
+    suggestions: ['Headcount by department', "Today's attendance overview", 'Open positions', 'Reviews awaiting HR', 'Pending leave requests', 'Payroll cost this month', 'Rating distribution'],
   },
 }
 
@@ -268,6 +269,109 @@ function newJoiners(ctx: BotContext): BotReply {
   return { text: `Joined in the last 12 months:\n${js.map((e) => `• ${e.name}, ${e.designation} (${e.department}), joined ${fmtDate(e.joinDate)}`).join('\n')}` }
 }
 
+// ---------- ATS topics ----------
+
+function hiringSummary(ctx: BotContext): BotReply {
+  const jobs = visibleJobs(ctx.session, ctx.data.jobs).filter((j) => j.status !== 'closed')
+  if (!jobs.length) return { text: ctx.session.role === 'hr' ? 'There are no active job openings.' : 'You have no active hiring requests. You can raise one from Recruitment.', actions: [{ label: 'Open Recruitment', page: 'recruitment' }] }
+  return {
+    text: `Active jobs (${jobs.length}):\n${jobs
+      .map((j) => {
+        const c = pipelineCounts(j.id, ctx.data.candidates)
+        return `• **${j.title}** (${JOB_STATUS_META[j.status].label}, ${c.hired}/${j.openings} filled): ${c.applied} applied, ${c.screening} screening, ${c.interview} interview, ${c.offer} offer`
+      })
+      .join('\n')}`,
+    actions: [{ label: 'Open Recruitment', page: 'recruitment' }],
+  }
+}
+
+function myInterviews(ctx: BotContext): BotReply {
+  const ivs = visibleInterviews(ctx.session, ctx.data.interviews, ctx.data.candidates, ctx.data.jobs)
+    .filter((i) => i.status === 'scheduled' && (ctx.session.role !== 'manager' || i.interviewerId === ctx.session.employeeId))
+    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))
+  if (!ivs.length) return { text: 'No interviews are scheduled.', actions: [{ label: 'Open Recruitment', page: 'recruitment' }] }
+  const cand = (id: string) => ctx.data.candidates.find((c) => c.id === id)
+  const job = (id: string) => ctx.data.jobs.find((j) => j.id === cand(id)?.jobId)
+  return {
+    text: `Upcoming interviews:\n${ivs
+      .map((i) => `• ${fmtDay(i.date)} ${i.time}: **${cand(i.candidateId)?.name}** for ${job(i.candidateId)?.title} (${i.round}, ${i.mode})${ctx.session.role === 'hr' ? ` with ${nameOf(ctx.data, i.interviewerId)}` : ''}${i.date < ctx.today ? ' — feedback overdue' : ''}`)
+      .join('\n')}`,
+    actions: [{ label: 'Open interviews', page: 'recruitment' }],
+  }
+}
+
+function candidateLookup(q: string, ctx: BotContext): BotReply | null {
+  const jobs = new Set(visibleJobs(ctx.session, ctx.data.jobs).map((j) => j.id))
+  const c = ctx.data.candidates.find((x) => jobs.has(x.jobId) && x.name.toLowerCase().split(' ').some((p) => p.length > 2 && new RegExp(`\\b${p}\\b`).test(q)))
+  if (!c) return null
+  const j = ctx.data.jobs.find((x) => x.id === c.jobId)!
+  const ivs = ctx.data.interviews.filter((i) => i.candidateId === c.id && i.status === 'completed')
+  return {
+    text: `**${c.name}** — candidate for ${j.title}\n• Stage: ${STAGE_META[c.stage].label}\n• ${c.experience} yrs, ${c.currentCompany || '—'}, expects ${inr(c.expectedSalary)}/month\n${ivs.length ? ivs.map((i) => `• ${i.round}: ${i.rating}/5, ${i.recommendation === 'hire' ? 'hire' : 'no hire'} (${nameOf(ctx.data, i.interviewerId)})`).join('\n') : '• No interview feedback yet'}`,
+    actions: [{ label: 'Open pipeline', page: 'recruitment' }],
+  }
+}
+
+// ---------- PMS topics ----------
+
+function activeCycle(ctx: BotContext) {
+  return ctx.data.cycles.find((c) => c.phase !== 'closed') ?? ctx.data.cycles[ctx.data.cycles.length - 1]
+}
+
+function reviewLine(ctx: BotContext, cycleId: string, empId: string) {
+  const goals = ctx.data.goals.filter((g) => g.cycleId === cycleId && g.employeeId === empId)
+  const rev = ctx.data.reviews.find((r) => r.cycleId === cycleId && r.employeeId === empId)
+  return { goals, rev, stage: reviewStage(goals, rev) }
+}
+
+function myReview(ctx: BotContext, empId = ctx.session.employeeId): BotReply {
+  const cycle = activeCycle(ctx)
+  if (!cycle) return { text: 'No review cycle has been started yet.' }
+  const { goals, rev, stage } = reviewLine(ctx, cycle.id, empId)
+  const self = empId === ctx.session.employeeId
+  if (!goals.length) return { text: `${self ? 'You have' : `${nameOf(ctx.data, empId)} has`} no goals in ${cycle.name} yet.`, actions: [{ label: 'Open Performance', page: 'performance' }] }
+  const lines = goals.map((g) => `• ${g.title} (${g.weight}%): ${g.progress}% done${g.approved ? '' : ', awaiting approval'}`)
+  const last = ctx.data.cycles.filter((c) => c.phase === 'closed').map((c) => ({ c, r: ctx.data.reviews.find((r) => r.cycleId === c.id && r.employeeId === empId) })).filter((x) => x.r?.finalRating).pop()
+  return {
+    text:
+      `${self ? 'Your' : `${nameOf(ctx.data, empId)}'s`} goals in **${cycle.name}** (${PHASE_META[cycle.phase].label}):\n${lines.join('\n')}\n` +
+      `Status: **${REVIEW_STAGE_META[stage].label}**` +
+      (rev?.selfRating ? ` · self ${rev.selfRating}` : '') + (rev?.managerRating ? ` · manager ${rev.managerRating}` : '') +
+      (rev?.finalRating ? ` · final ${rev.finalRating} (${RATING_LABEL[rev.finalRating]}), increment ${rev.incrementPct}%` : '') +
+      (last ? `\nLast cycle (${last.c.name}): rated **${last.r!.finalRating}** — ${RATING_LABEL[last.r!.finalRating!]}, ${last.r!.incrementPct}% increment.` : ''),
+    actions: [{ label: 'Open Performance', page: 'performance' }],
+  }
+}
+
+function teamReviews(pool: Employee[], ctx: BotContext, onlyStage?: string): BotReply {
+  const cycle = activeCycle(ctx)
+  if (!cycle) return { text: 'No review cycle has been started yet.' }
+  const ids = new Set(cycleParticipants(cycle, ctx.data.employees).map((e) => e.id))
+  const rows = pool.filter((e) => ids.has(e.id)).map((e) => ({ e, ...reviewLine(ctx, cycle.id, e.id) })).filter((r) => !onlyStage || r.stage === onlyStage)
+  if (!rows.length) return { text: onlyStage ? `Nothing is ${REVIEW_STAGE_META[onlyStage as keyof typeof REVIEW_STAGE_META].label.toLowerCase()} in ${cycle.name}.` : `Nobody in your scope is part of ${cycle.name}.`, actions: [{ label: 'Open Performance', page: 'performance' }] }
+  const byStage = new Map<string, string[]>()
+  for (const r of rows) byStage.set(r.stage, [...(byStage.get(r.stage) ?? []), r.e.name])
+  return {
+    text: `${cycle.name} (${PHASE_META[cycle.phase].label}) — ${rows.length} people:\n${[...byStage]
+      .map(([st, names]) => `• ${REVIEW_STAGE_META[st as keyof typeof REVIEW_STAGE_META].label} (${names.length}): ${names.join(', ')}`)
+      .join('\n')}`,
+    actions: [{ label: 'Open Performance', page: 'performance' }],
+  }
+}
+
+function ratingDistribution(ctx: BotContext): BotReply {
+  const cycle = [...ctx.data.cycles].reverse().find((c) => ctx.data.reviews.some((r) => r.cycleId === c.id && r.finalRating))
+  if (!cycle) return { text: 'No reviews have been finalised yet.' }
+  const fins = ctx.data.reviews.filter((r) => r.cycleId === cycle.id && r.finalRating)
+  const avg = fins.reduce((s, r) => s + r.finalRating!, 0) / fins.length
+  return {
+    text: `Final ratings in **${cycle.name}** (${fins.length} employees, average ${avg.toFixed(1)}):\n${[5, 4, 3, 2, 1]
+      .map((n) => `• ${n} — ${RATING_LABEL[n]}: ${fins.filter((r) => r.finalRating === n).length}`)
+      .join('\n')}\nAverage increment: ${(fins.reduce((s, r) => s + (r.incrementPct ?? 0), 0) / fins.length).toFixed(1)}%`,
+    actions: [{ label: 'Open Performance', page: 'performance' }],
+  }
+}
+
 function help(role: Session['role']): BotReply {
   return { text: `Here are some things you can ask me:\n${BOT_PROFILES[role].suggestions.map((s) => `• ${s}`).join('\n')}` }
 }
@@ -288,6 +392,9 @@ export function answer(question: string, ctx: BotContext): BotReply {
   if (role === 'employee') {
     if (has(q, 'other', 'colleague', 'team', 'everyone', 'salary of', 'all employees', 'payroll of'))
       return { text: "Sorry, I can only share your own information. For anything about other employees, please contact HR." }
+    if (has(q, 'interview', 'candidate', 'hiring', 'recruit', 'job opening', 'vacanc'))
+      return { text: 'Recruitment is handled by HR and hiring managers. Ask HR about internal job openings or referrals.' }
+    if (has(q, 'goal', 'kra', 'review', 'appraisal', 'rating', 'performance', 'increment', 'hike')) return myReview(ctx)
     if (has(q, 'balance', 'how many leave', 'leaves left', 'remaining')) return myBalance(ctx)
     if (has(q, 'apply', 'request leave', 'take leave', 'how do i')) {
       return { text: 'To apply for leave: open **Leave** → **Apply for leave**, choose the type and dates, add a reason and submit. Your manager will be notified to approve it.', actions: [{ label: 'Apply now', page: 'leave' }] }
@@ -317,6 +424,28 @@ export function answer(question: string, ctx: BotContext): BotReply {
   }
   if (person && has(q, 'who is', 'details', 'contact', 'info', 'about', 'find', 'email', 'phone')) {
     return { text: `**${person.name}** (${person.code})\n• ${person.designation}, ${person.department}\n• ${person.location}\n• ${person.email} · ${person.phone}\n• Reports to: ${nameOf(ctx.data, person.managerId)}\n• Joined ${fmtDate(person.joinDate)}` }
+  }
+  if (person && has(q, 'goal', 'review', 'rating', 'appraisal', 'performance')) return myReview(ctx, person.id)
+  if (has(q, 'my goal', 'my review', 'my rating', 'my appraisal')) return myReview(ctx)
+  if (has(q, 'interview')) return myInterviews(ctx)
+  if (has(q, 'candidate', 'applicant')) {
+    const c = candidateLookup(q, ctx)
+    if (c) return c
+    return hiringSummary(ctx)
+  }
+  if (has(q, 'open position', 'opening', 'hiring', 'recruit', 'vacanc', 'pipeline', 'job')) {
+    const c = candidateLookup(q, ctx)
+    return c ?? hiringSummary(ctx)
+  }
+  if (role === 'hr' && has(q, 'distribution', 'bell curve')) return ratingDistribution(ctx)
+  if (has(q, 'review', 'appraisal', 'goal', 'kra', 'performance', 'rating')) {
+    if (role === 'hr' && has(q, 'awaiting hr', 'finalise', 'pending')) return teamReviews(pool, ctx, 'hr_pending')
+    if (role === 'manager' && has(q, 'pending')) return teamReviews(pool, ctx, 'manager_pending')
+    return teamReviews(pool, ctx)
+  }
+  {
+    const c = candidateLookup(q, ctx)
+    if (c && !person) return c
   }
   if (!person && /\b(salary|pay|payroll|ctc)\b/.test(q) && role === 'manager')
     return { text: 'Salary details are confidential and only available to HR. I can help with your team’s attendance and leave.' }

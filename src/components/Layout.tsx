@@ -1,9 +1,10 @@
-import { BarChart3, CalendarCheck2, CalendarDays, LayoutDashboard, LogOut, Menu, RotateCcw, Users, Wallet, X } from 'lucide-react'
+import { BarChart3, Briefcase, CalendarCheck2, CalendarDays, LayoutDashboard, LogOut, Menu, RotateCcw, Target, Users, Wallet, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import type { Page } from '../lib/chatbot'
 import { fmtDate, todayIST } from '../lib/date'
 import { useStore } from '../lib/store'
-import type { Role } from '../lib/types'
+import { cycleParticipants, reviewStage, scopeEmployees, visibleInterviews } from '../lib/rules'
+import type { HRMSData, Role, Session } from '../lib/types'
 import { Avatar, Badge, cx } from './ui'
 
 export const ROLE_LABEL: Record<Role, string> = { hr: 'HR Admin', manager: 'Manager', employee: 'Employee' }
@@ -14,11 +15,35 @@ export function navFor(role: Role): { page: Page; label: string; icon: ReactNode
     employees: { page: 'employees' as Page, label: role === 'manager' ? 'My Team' : 'Employees', icon: <Users size={18} /> },
     attendance: { page: 'attendance' as Page, label: role === 'employee' ? 'My Attendance' : 'Attendance', icon: <CalendarCheck2 size={18} /> },
     leave: { page: 'leave' as Page, label: 'Leave', icon: <CalendarDays size={18} /> },
+    recruitment: { page: 'recruitment' as Page, label: 'Recruitment', icon: <Briefcase size={18} /> },
+    performance: { page: 'performance' as Page, label: 'Performance', icon: <Target size={18} /> },
     payroll: { page: 'payroll' as Page, label: role === 'hr' ? 'Payroll' : 'My Payslip', icon: <Wallet size={18} /> },
     reports: { page: 'reports' as Page, label: 'Reports', icon: <BarChart3 size={18} /> },
   }
-  if (role === 'employee') return [all.dashboard, all.attendance, all.leave, all.payroll]
-  return [all.dashboard, all.employees, all.attendance, all.leave, all.payroll, all.reports]
+  if (role === 'employee') return [all.dashboard, all.attendance, all.leave, all.performance, all.payroll]
+  return [all.dashboard, all.employees, all.attendance, all.leave, all.recruitment, all.performance, all.payroll, all.reports]
+}
+
+/** Things waiting for this user in the ATS and PMS, shown as sidebar badges. */
+function actionCounts(session: Session, data: HRMSData): Partial<Record<Page, number>> {
+  const out: Partial<Record<Page, number>> = {}
+  if (session.role !== 'employee') {
+    const myInterviews = visibleInterviews(session, data.interviews, data.candidates, data.jobs).filter((i) => i.status === 'scheduled' && i.interviewerId === session.employeeId).length
+    out.recruitment = myInterviews + (session.role === 'hr' ? data.jobs.filter((j) => j.status === 'requested').length : 0)
+  }
+  const cycle = data.cycles.find((c) => c.phase === 'review')
+  if (cycle) {
+    const stageOf = (id: string) => reviewStage(data.goals.filter((g) => g.cycleId === cycle.id && g.employeeId === id), data.reviews.find((r) => r.cycleId === cycle.id && r.employeeId === id))
+    const ppl = cycleParticipants(cycle, data.employees)
+    const mine = ppl.some((e) => e.id === session.employeeId) && stageOf(session.employeeId) === 'self_pending' ? 1 : 0
+    const team = session.role === 'hr'
+      ? ppl.filter((e) => stageOf(e.id) === 'hr_pending' || (e.managerId === null || e.managerId === session.employeeId) && stageOf(e.id) === 'manager_pending').length
+      : session.role === 'manager'
+        ? ppl.filter((e) => scopeEmployees(session, data.employees).some((x) => x.id === e.id) && stageOf(e.id) === 'manager_pending').length
+        : 0
+    out.performance = mine + team
+  }
+  return out
 }
 
 export function Layout({ page, setPage, children }: { page: Page; setPage: (p: Page) => void; children: ReactNode }) {
@@ -32,6 +57,7 @@ export function Layout({ page, setPage, children }: { page: Page; setPage: (p: P
     if (session.role === 'manager') return data.employees.find((e) => e.id === l.employeeId)?.managerId === session.employeeId
     return false
   }).length
+  const badges: Partial<Record<Page, number>> = { leave: pendingCount, ...actionCounts(session, data) }
 
   const sidebar = (
     <nav className="flex h-full flex-col bg-ink text-white">
@@ -57,8 +83,8 @@ export function Layout({ page, setPage, children }: { page: Page; setPage: (p: P
           >
             <span className={page === n.page ? 'text-brand-light' : ''}>{n.icon}</span>
             {n.label}
-            {n.page === 'leave' && pendingCount > 0 && (
-              <span className="ml-auto rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold">{pendingCount}</span>
+            {(badges[n.page] ?? 0) > 0 && (
+              <span className="ml-auto rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold">{badges[n.page]}</span>
             )}
           </button>
         ))}

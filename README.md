@@ -1,6 +1,6 @@
 # SG HRMS
 
-A Human Resource Management System for HR, managers and employees: manual attendance, employee directory, leave management, payroll overview, reports, and a role-specific chat assistant.
+A Human Resource Management System for HR, managers and employees. It combines core HR (manual attendance, employee directory, leave, payroll, reports), an **ATS** (applicant tracking for hiring), a **PMS** (performance management) and a role-specific chat assistant.
 
 ## Sign-in
 
@@ -8,9 +8,9 @@ Each role has its own password:
 
 | Role | Password | What they can do |
 |---|---|---|
-| Manager | `1234` | Mark attendance and approve leave for their direct reports, view team reports, own payslip |
-| HR | `5678` | Everything: employees, attendance for all, leave approvals, holidays, payroll, reports |
-| Employee | `9101` | Own attendance calendar, apply for/cancel leave, own payslip |
+| Manager | `1234` | Mark attendance and approve leave for their direct reports, request hires and interview candidates for their jobs, set and review their team's goals, view team reports, own payslip |
+| HR | `5678` | Everything: employees, attendance, leave, holidays, recruitment, review cycles and appraisals, payroll, reports |
+| Employee | `9101` | Own attendance calendar, apply for and cancel leave, own goals and self review, own payslip |
 
 Managers and employees pick their profile from a list after choosing the role.
 
@@ -22,14 +22,25 @@ Managers and employees pick their profile from a list after choosing the role.
 - **Employee directory:** HR can add, edit, deactivate and reactivate employees. PAN and bank numbers are masked, with an HR-only reveal.
 - **Leave management:** CL 8, SL 7 and EL 15 days per year. Balances are computed, not stored. Overlap and balance checks run on every request. Requests go to the manager (HR for managers). Approved leave is written into attendance. HR maintains the holiday calendar.
 - **Payroll overview:** Basic + HRA + allowances, PF at 12% of earned basic (capped at ₹1,800) and ₹200 professional tax. Loss of pay comes from absent days and half days. Includes printable payslips and a CSV export.
+- **Recruitment (ATS):**
+  - Managers raise hiring requests, and HR approves, opens, holds or closes jobs.
+  - Each job has a kanban pipeline (Applied → Screening → Interview → Offer → Hired / Rejected) where cards can be dragged between stages.
+  - Interviews can be scheduled, and interviewers submit star ratings, a hire/no-hire recommendation and notes.
+  - **Hire** turns an offer-stage candidate into an employee in the directory. A job closes automatically once all its openings are filled.
+- **Performance (PMS):**
+  - Review cycles go through Goal setting → Review → Closed.
+  - Employees set weighted goals (KRAs) that total 100%, the manager approves them, and employees update progress.
+  - In the review phase, the employee rates themselves first, then the manager rates them. HR then finalises the rating and applies an appraisal increment. Suggested increments are 0%, 3%, 6%, 10% and 15% for ratings 1–5.
+  - The increment updates the employee's salary in payroll.
+  - Managers are reviewed by HR.
 - **Dashboards and reports:** attendance trend, headcount and department attendance rates, with CSV exports.
-- **Chat assistants:** *HR Copilot*, *Manager Assistant* and *My HR Assistant*. Each answers from live data and only within what that role is allowed to see.
+- **Chat assistants:** *HR Copilot*, *Manager Assistant* and *My HR Assistant*. Each answers from live data, including hiring and performance questions, and only within what that role is allowed to see.
 
 All dates are handled in IST (Asia/Kolkata).
 
 ## Data storage
 
-Data is kept in the browser's `localStorage`, so each browser or device has its own copy. It starts with 20 demo employees and 60 days of attendance. HR can restore the demo data with **Reset demo data** in the sidebar.
+Data is kept in the browser's `localStorage`, so each browser or device has its own copy. It starts with 20 demo employees, 60 days of attendance, five jobs with candidates and interviews, a closed H1 review cycle and an H2 cycle in review. HR can restore the demo data with **Reset demo data** in the sidebar.
 
 ## Development
 
