@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
+  --color-ink: #0E1726;
+  --color-ink-2: #4A5568;
+  --color-muted: #5B6475;
+  --color-line: #E3E7EF;
+  --color-soft: #EDF0F4;
+  --color-canvas: #F4F6FB;
+  --color-brand: #D63A16;
+  --color-brand-soft: #FFE8D6;
+  --color-brand-light: #FF8A66;
+  --color-ok: #0F7B5F;
+  --color-ok-soft: #DDF3EA;
+  --color-bad: #B42318;
+  --color-bad-soft: #FDE3E1;
+  --color-warn: #B54708;
+  --color-warn-soft: #FFF1CC;
+  --color-info: #2F4FC9;
+  --color-info-soft: #E3E9FD;
+  --color-teal: #0A6F78;
+  --color-teal-soft: #D9F1F2;
+  --color-plum: #7A2BB8;
+  --color-plum-soft: #F1E4FB;
+}
+
+html, body, #root { height: 100%; }
+body { @apply bg-canvas text-ink font-sans antialiased; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}
+
+/* Printing a payslip from a dialog prints only the dialog. */
+@media print {
+  body:has([role='dialog']) main > *:not(:has([role='dialog'])) { display: none !important; }
+  [role='dialog'] { box-shadow: none !important; }
+}
