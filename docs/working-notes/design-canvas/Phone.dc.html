@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tarang HR · Phone home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0A6F78}a:hover{color:#074F55}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid #0A6F78;outline-offset:2px}
+</style>
+</helmet>
+
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; background: #F4F6FB; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #0E1726; display: flex; flex-direction: column">
+
+  <div style="flex: 1; overflow: hidden; padding: 20px 16px 0; display: flex; flex-direction: column; gap: 16px">
+    <header style="display: flex; align-items: center; justify-content: space-between">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#D63A16"></rect><path d="M7 18c3.5 0 3.5-5 7-5s3.5 5 7 5 3.5-5 7-5 3.5 5 5 5" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"></path><path d="M7 27c3.5 0 3.5-5 7-5s3.5 5 7 5 3.5-5 7-5 3.5 5 5 5" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round"></path></svg>
+        <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.02em">Tarang HR</span>
+      </div>
+      <div aria-hidden="true" style="width: 38px; height: 38px; border-radius: 999px; background: #FF8A66; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px">SG</div>
+    </header>
+
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span style="font-size: 13px; font-weight: 600; color: #5B6475">Fri 30 Oct · 08:57 IST · Verna Plant</span>
+      <h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 28px; letter-spacing: -0.03em">Hi, Santosh</h1>
+    </div>
+
+    <!-- Check-in -->
+    <div style="background: #0E1726; color: #FFFFFF; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <span style="font-size: 13px; color: #AEB8CC">Today</span>
+        <span style="{{badgeStyle}}">{{status}}</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px">
+        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 52px; font-weight: 700; letter-spacing: -0.04em; line-height: 1">{{big}}</span>
+        <span style="font-size: 13px; color: #AEB8CC">{{bigLabel}}</span>
+      </div>
+      <button type="button" onClick="{{punch}}" disabled="{{dis}}" style="{{btnStyle}}">{{btnLabel}}</button>
+      <span style="font-size: 12px; color: #AEB8CC">Late after 10:15 · 8h = Present · 4h = Half day</span>
+    </div>
+
+    <!-- Balances -->
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 18px">Leave balance</h2>
+      <a href="#" style="font-size: 13px; font-weight: 700">All types</a>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+      <div style="background: #FFEDE6; border-radius: 16px; padding: 14px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 800; font-size: 13px; color: #D63A16">CL</span><span style="font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; line-height: 1.1">6</span><span style="font-size: 11px; color: #4A5568">of 8 days</span></div>
+      <div style="background: #E2F3F4; border-radius: 16px; padding: 14px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 800; font-size: 13px; color: #0A6F78">SL</span><span style="font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; line-height: 1.1">7</span><span style="font-size: 11px; color: #4A5568">of 7 days</span></div>
+      <div style="background: #E3E9FF; border-radius: 16px; padding: 14px 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 800; font-size: 13px; color: #2F4FC9">EL</span><span style="font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; line-height: 1.1">14.25</span><span style="font-size: 11px; color: #4A5568">incl. 3 carried</span></div>
+    </div>
+
+    <button type="button" onClick="{{openSheet}}" style="min-height: 52px; border: 0; border-radius: 16px; background: #D63A16; color: #FFFFFF; font-size: 16px; font-weight: 800">Apply leave</button>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav aria-label="Main" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: #FFFFFF; border-top: 1px solid #E3E7EF; padding: 8px 8px 20px">
+    <a href="#" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 12px; font-weight: 800; color: #0E1726">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E1726" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg>Home</a>
+    <a href="#" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 12px; font-weight: 600; color: #5B6475">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B6475" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>Attendance</a>
+    <a href="#" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 12px; font-weight: 600; color: #5B6475">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B6475" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h9l1 2h5v9h-7l-1-2H5"></path></svg>Leave</a>
+    <a href="#" style="min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 12px; font-weight: 600; color: #5B6475">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5B6475" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"></path></svg>Ask HR</a>
+  </nav>
+
+  <!-- Apply-leave sheet -->
+  <sc-if value="{{sheet}}" hint-placeholder-val="{{false}}">
+    <div style="position: absolute; inset: 0; background: rgba(14, 23, 38, 0.55); display: flex; flex-direction: column; justify-content: flex-end">
+      <div style="background: #FFFFFF; border-radius: 26px 26px 0 0; padding: 22px 16px 28px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 22px">Apply leave</h2>
+          <button type="button" aria-label="Close" onClick="{{closeSheet}}" style="width: 44px; height: 44px; border: 0; border-radius: 12px; background: #F4F6FB; display: flex; align-items: center; justify-content: center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0E1726" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          </button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="ltype" style="font-size: 13px; font-weight: 700">Leave type</label>
+          <select id="ltype" style="min-height: 48px; border: 1.5px solid #DCE1EB; border-radius: 12px; padding: 0 12px; font: inherit; font-size: 15px; background: #FFFFFF"><option>Casual Leave (CL) · 6 available</option><option>Sick Leave (SL) · 7 available</option><option>Earned Leave (EL) · 14.25 available</option></select>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+          <div style="display: flex; flex-direction: column; gap: 6px"><label for="lfrom" style="font-size: 13px; font-weight: 700">From</label><input id="lfrom" type="text" value="Fri 30 Oct" style="min-height: 48px; box-sizing: border-box; border: 1.5px solid #DCE1EB; border-radius: 12px; padding: 0 12px; font: inherit; font-size: 15px"></div>
+          <div style="display: flex; flex-direction: column; gap: 6px"><label for="lto" style="font-size: 13px; font-weight: 700">To</label><input id="lto" type="text" value="Mon 2 Nov" style="min-height: 48px; box-sizing: border-box; border: 1.5px solid #DCE1EB; border-radius: 12px; padding: 0 12px; font: inherit; font-size: 15px"></div>
+        </div>
+        <div style="background: #E2F3F4; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-size: 14px; font-weight: 700; color: #0A6F78">Working days</span><span style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700">3</span></div>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; font-size: 12px; font-weight: 700; text-align: center">
+            <span style="background: #FFFFFF; border-radius: 10px; padding: 6px 0">Fri 30<br>Leave</span>
+            <span style="background: #FFFFFF; border-radius: 10px; padding: 6px 0">Sat 31<br>Leave</span>
+            <span style="background: #EDF0F4; color: #4A5568; border-radius: 10px; padding: 6px 0">Sun 1<br>Off</span>
+            <span style="background: #FFFFFF; border-radius: 10px; padding: 6px 0">Mon 2<br>Leave</span>
+          </div>
+          <span style="font-size: 12px; color: #4A5568">Verna Plant works Saturdays · no sandwich rule · CL 6 → 3 after approval</span>
+        </div>
+        <button type="button" onClick="{{closeSheet}}" style="min-height: 52px; border: 0; border-radius: 16px; background: #D63A16; color: #FFFFFF; font-size: 16px; font-weight: 800">Send to manager</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { punch: 'none', sheet: false };
+  }
+  renderVals() {
+    var self = this;
+    var p = this.state.punch;
+    var base = 'min-height: 56px; border: 0; border-radius: 16px; font-size: 18px; font-weight: 800; ';
+    var pill = function (bg, fg) { return 'background: ' + bg + '; color: ' + fg + '; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px'; };
+    var m = {
+      none: { big: '08:57', bigLabel: 'IST now', btnLabel: 'Check in', btnStyle: base + 'background: #D63A16; color: #FFFFFF', status: 'Not checked in', badgeStyle: pill('#EDF0F4', '#4A5568'), dis: false },
+      'in': { big: '08:57', bigLabel: 'checked in · on time', btnLabel: 'Check out', btnStyle: base + 'background: #FFFFFF; color: #0E1726', status: 'Working', badgeStyle: pill('#DDF5EC', '#0F7B5F'), dis: false },
+      out: { big: '8h 06m', bigLabel: 'worked today', btnLabel: 'Done for today', btnStyle: base + 'background: #26334A; color: #AEB8CC; cursor: default', status: 'Present', badgeStyle: pill('#DDF5EC', '#0F7B5F'), dis: true }
+    }[p];
+    return Object.assign({}, m, {
+      punch: function () { self.setState({ punch: p === 'none' ? 'in' : 'out' }); },
+      sheet: this.state.sheet,
+      openSheet: function () { self.setState({ sheet: true }); },
+      closeSheet: function () { self.setState({ sheet: false }); }
+    });
+  }
+}
+</script>
+</body>
+</html>

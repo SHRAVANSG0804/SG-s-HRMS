@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tarang HR · Design system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0A6F78}a:hover{color:#074F55}
+button{font-family:inherit}
+</style>
+</helmet>
+
+<div style="width: 1440px; height: 1080px; box-sizing: border-box; padding: 56px 64px; background: #FFFFFF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #0E1726; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 48px; align-content: start">
+
+  <!-- Logo -->
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">LOGO</h2>
+    <div style="background: #0E1726; border-radius: 20px; padding: 28px; display: flex; align-items: center; gap: 14px">
+      <svg width="56" height="56" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#D63A16"></rect><path d="M7 18c3.5 0 3.5-5 7-5s3.5 5 7 5 3.5-5 7-5 3.5 5 5 5" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"></path><path d="M7 27c3.5 0 3.5-5 7-5s3.5 5 7 5 3.5-5 7-5 3.5 5 5 5" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round"></path></svg>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.03em; color: #FFFFFF">Tarang HR</span>
+    </div>
+    <div style="border: 1px solid #E3E7EF; border-radius: 20px; padding: 28px; display: flex; align-items: center; gap: 14px">
+      <svg width="56" height="56" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#D63A16"></rect><path d="M7 18c3.5 0 3.5-5 7-5s3.5 5 7 5 3.5-5 7-5 3.5 5 5 5" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"></path><path d="M7 27c3.5 0 3.5-5 7-5s3.5 5 7 5 3.5-5 7-5 3.5 5 5 5" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round"></path></svg>
+      <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px; letter-spacing: -0.03em">Tarang HR</span>
+    </div>
+    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #4A5568">"Tarang" = wave (Marathi/Konkani). Two waves = the two Konkan sites, Panaji and Verna.</p>
+  </section>
+
+  <!-- Core colours -->
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">CORE COLOURS</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div style="border-radius: 16px; overflow: hidden; border: 1px solid #E3E7EF"><div style="height: 64px; background: #0E1726"></div><div style="padding: 10px 12px; font-size: 13px"><strong>Ink</strong> #0E1726<br><span style="color: #5B6475">text, sidebar, hero card</span></div></div>
+      <div style="border-radius: 16px; overflow: hidden; border: 1px solid #E3E7EF"><div style="height: 64px; background: #D63A16"></div><div style="padding: 10px 12px; font-size: 13px"><strong>Sunset coral</strong> #D63A16<br><span style="color: #5B6475">primary action · 4.7:1 on white</span></div></div>
+      <div style="border-radius: 16px; overflow: hidden; border: 1px solid #E3E7EF"><div style="height: 64px; background: #0A6F78"></div><div style="padding: 10px 12px; font-size: 13px"><strong>Lagoon teal</strong> #0A6F78<br><span style="color: #5B6475">links, Ask HR, focus · 5.9:1</span></div></div>
+      <div style="border-radius: 16px; overflow: hidden; border: 1px solid #E3E7EF"><div style="height: 64px; background: #F4F6FB"></div><div style="padding: 10px 12px; font-size: 13px"><strong>Ground</strong> #F4F6FB<br><span style="color: #5B6475">page background</span></div></div>
+      <div style="border-radius: 16px; overflow: hidden; border: 1px solid #E3E7EF"><div style="height: 64px; background: #5B6475"></div><div style="padding: 10px 12px; font-size: 13px"><strong>Muted</strong> #5B6475<br><span style="color: #5B6475">secondary text · 6.0:1</span></div></div>
+      <div style="border-radius: 16px; overflow: hidden; border: 1px solid #E3E7EF"><div style="height: 64px; background: #FF8A66"></div><div style="padding: 10px 12px; font-size: 13px"><strong>Coral light</strong> #FF8A66<br><span style="color: #5B6475">accents on Ink only</span></div></div>
+    </div>
+  </section>
+
+  <!-- Type -->
+  <section style="display: flex; flex-direction: column; gap: 14px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">TYPOGRAPHY</h2>
+    <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 64px; font-weight: 700; letter-spacing: -0.04em; line-height: 1">18.25</span><span style="font-size: 12px; color: #5B6475">Numbers · Space Grotesk 700 · 48–64px</span></div>
+    <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 40px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1">Good morning</span><span style="font-size: 12px; color: #5B6475">H1 · Space Grotesk 700 · 40px</span></div>
+    <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700">Leave balance</span><span style="font-size: 12px; color: #5B6475">H2 card title · 22px</span></div>
+    <div style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 15px; line-height: 1.5">Body text in Plus Jakarta Sans, 15px / 1.5, for forms, tables and chat.</span><span style="font-size: 12px; color: #5B6475">Body · 15px · labels 13px/700 · captions 12px</span></div>
+    <span style="font-size: 12px; color: #5B6475">Spacing: 4 · 8 · 12 · 16 · 20 · 24 · 32 · 48 · Radius: cards 24, inner 16, controls 12, pills 999</span>
+  </section>
+
+  <!-- Status colours -->
+  <section style="grid-column: span 2; display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">ATTENDANCE STATUS · same on every screen, always with a text label</h2>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><div style="width: 56px; height: 56px; border-radius: 14px; background: #0F7B5F; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800">P</div><span style="background: #DDF5EC; color: #0F7B5F; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px">Present</span><span style="font-size: 12px; color: #5B6475">#0F7B5F on #DDF5EC<br>≥ 8h · WFH</span></div>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><div style="width: 56px; height: 56px; border-radius: 14px; background: #8A5A00; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800">½</div><span style="background: #FFF1CC; color: #8A5A00; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px">Half day</span><span style="font-size: 12px; color: #5B6475">#8A5A00 on #FFF1CC<br>4h to under 8h</span></div>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><div style="width: 56px; height: 56px; border-radius: 14px; background: #B42318; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800">A</div><span style="background: #FDE3E1; color: #B42318; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px">Absent</span><span style="font-size: 12px; color: #5B6475">#B42318 on #FDE3E1<br>&lt; 4h / no punch</span></div>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><div style="width: 56px; height: 56px; border-radius: 14px; background: #2F4FC9; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800">L</div><span style="background: #E3E9FF; color: #2F4FC9; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px">On leave</span><span style="font-size: 12px; color: #5B6475">#2F4FC9 on #E3E9FF<br>approved leave</span></div>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><div style="width: 56px; height: 56px; border-radius: 14px; background: #7A2BB8; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800">H</div><span style="background: #F1E6FB; color: #7A2BB8; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px">Holiday</span><span style="font-size: 12px; color: #5B6475">#7A2BB8 on #F1E6FB<br>per location</span></div>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><div style="width: 56px; height: 56px; border-radius: 14px; background: #EDF0F4; color: #4A5568; display: flex; align-items: center; justify-content: center; font-weight: 800">W</div><span style="background: #EDF0F4; color: #4A5568; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px">Weekly off</span><span style="font-size: 12px; color: #5B6475">#4A5568 on #EDF0F4<br>Sat+Sun HO · Sun plant</span></div>
+      <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><div style="width: 56px; height: 56px; border-radius: 14px; background: #B54708; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 800">!</div><span style="background: #FFE8D6; color: #B54708; font-size: 12px; font-weight: 800; border-radius: 999px; padding: 4px 10px">Late</span><span style="font-size: 12px; color: #5B6475">#B54708 on #FFE8D6<br>flag · after 10:15</span></div>
+    </div>
+  </section>
+
+  <!-- Buttons -->
+  <section style="display: flex; flex-direction: column; gap: 14px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">BUTTONS · min 44px tall</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px">
+      <button type="button" style="min-height: 44px; border: 0; border-radius: 12px; padding: 0 18px; background: #D63A16; color: #FFFFFF; font-weight: 700; font-size: 14px">Primary</button>
+      <button type="button" style="min-height: 44px; border: 0; border-radius: 12px; padding: 0 18px; background: #0E1726; color: #FFFFFF; font-weight: 700; font-size: 14px">Secondary</button>
+      <button type="button" style="min-height: 44px; border: 1.5px solid #DCE1EB; border-radius: 12px; padding: 0 18px; background: #FFFFFF; color: #0E1726; font-weight: 700; font-size: 14px">Outline</button>
+      <button type="button" style="min-height: 44px; border: 0; border-radius: 12px; padding: 0 18px; background: #0F7B5F; color: #FFFFFF; font-weight: 700; font-size: 14px">Approve</button>
+      <button type="button" style="min-height: 44px; border: 1.5px solid #B42318; border-radius: 12px; padding: 0 18px; background: #FFFFFF; color: #B42318; font-weight: 700; font-size: 14px">Reject</button>
+      <button type="button" disabled style="min-height: 44px; border: 0; border-radius: 12px; padding: 0 18px; background: #EDF0F4; color: #5B6475; font-weight: 700; font-size: 14px">Disabled</button>
+    </div>
+  </section>
+
+  <!-- Form field with error -->
+  <section style="display: flex; flex-direction: column; gap: 14px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">FORM FIELD · default and error</h2>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="ds-ifsc" style="font-size: 13px; font-weight: 700">IFSC</label>
+      <input id="ds-ifsc" type="text" value="HDFC0001234" style="min-height: 48px; box-sizing: border-box; border: 1.5px solid #DCE1EB; border-radius: 12px; padding: 0 14px; font: inherit; font-size: 15px">
+      <span style="font-size: 12px; color: #5B6475">4 letters, 0, then 6 letters or digits</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="ds-pan" style="font-size: 13px; font-weight: 700">PAN</label>
+      <input id="ds-pan" type="text" value="ABC123" aria-invalid="true" aria-describedby="ds-pan-err" style="min-height: 48px; box-sizing: border-box; border: 2px solid #B42318; border-radius: 12px; padding: 0 14px; font: inherit; font-size: 15px; background: #FFF8F7">
+      <span id="ds-pan-err" style="font-size: 13px; font-weight: 600; color: #B42318">PAN must be 5 letters, 4 digits, 1 letter, e.g. ABCDE1234F</span>
+    </div>
+  </section>
+
+  <!-- Masked data + table row -->
+  <section style="display: flex; flex-direction: column; gap: 14px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">MASKED DATA · Reveal is HR-only and logged</h2>
+    <div style="border: 1px solid #E3E7EF; border-radius: 16px; overflow: hidden">
+      <div style="display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #EEF1F6"><span style="font-size: 13px; color: #5B6475">PAN</span><span style="font-family: ui-monospace, Menlo, monospace; font-weight: 700">ABCDE****F</span><a href="#" style="font-size: 13px; font-weight: 700">Reveal</a></div>
+      <div style="display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #EEF1F6"><span style="font-size: 13px; color: #5B6475">Aadhaar</span><span style="font-family: ui-monospace, Menlo, monospace; font-weight: 700">XXXX XXXX 1234</span><span style="font-size: 12px; color: #5B6475">never revealed</span></div>
+      <div style="display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 12px 16px"><span style="font-size: 13px; color: #5B6475">Bank a/c</span><span style="font-family: ui-monospace, Menlo, monospace; font-weight: 700">XXXXXX4821</span><a href="#" style="font-size: 13px; font-weight: 700">Reveal</a></div>
+    </div>
+  </section>
+
+  <!-- States -->
+  <section style="grid-column: span 3; display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; color: #5B6475">EMPTY · LOADING · ERROR (dashboard, approvals inbox, reports)</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+      <div style="border: 1px solid #E3E7EF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0F7B5F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+        <span style="font-weight: 800; font-size: 16px">Inbox zero</span>
+        <span style="font-size: 14px; color: #5B6475">No leave or regularisation requests waiting for you.</span>
+      </div>
+      <div style="border: 1px solid #E3E7EF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px">
+        <div style="height: 14px; width: 40%; border-radius: 8px; background: #EDF0F4"></div>
+        <div style="height: 48px; width: 60%; border-radius: 10px; background: #EDF0F4"></div>
+        <div style="height: 10px; width: 100%; border-radius: 999px; background: #EDF0F4"></div>
+        <span style="font-size: 13px; color: #5B6475">Skeleton blocks match the final card layout, so nothing jumps</span>
+      </div>
+      <div style="border: 1.5px solid #B42318; background: #FFF8F7; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+        <span style="font-weight: 800; font-size: 16px; color: #B42318">Couldn't load the October summary</span>
+        <span style="font-size: 14px; color: #4A5568">The server didn't respond. Nothing was changed.</span>
+        <button type="button" style="align-self: flex-start; min-height: 44px; border: 0; border-radius: 12px; padding: 0 18px; background: #0E1726; color: #FFFFFF; font-weight: 700; font-size: 14px">Try again</button>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
